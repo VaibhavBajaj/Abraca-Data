@@ -81,17 +81,23 @@
       </fieldset>
     </form>
     <p id="demo"></p>
+    <form id = "result_table"></form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script>
       function myFunction() {
         var x = document.getElementById("myText4").value;
-        document.getElementById("demo").innerHTML = x;
         $.post( "/postmethod", {
-                temp : x});
+                temp : x}).done(function(data) {
+                  var stat = data["status"];
+                  if(stat == "fail") {
+                    alert("Error your article id does not exist")
+                  } else {
+                    alert(stat);
+                    document.getElementById("result_table").innerHTML = data["data"]
+                  }
+        });
+
       }
     </script>
-{% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-{% endfor %}
   </body>
 </html>
