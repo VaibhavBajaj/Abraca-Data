@@ -1,23 +1,17 @@
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request, jsonify, make_response, url_for
 from mysqldb import DB
-import pandas as pd
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     db = DB()
     table = db.search_article_by_id(20)
+    temp = url_for('static', filename='style.css')
     return render_template('webpage.html', titles = table.columns.values)
 
 @app.route("/postmethod", methods=["GET", "POST"])
 def search() :
-    print("temp")
-    if request.method == "POST" :
-        print("SDFDSFDSAff")
-    else :
-        print("GET")
     id = request.form.get('temp')
-    print(id)
     db = DB()
     table = db.search_article_by_id(id)
     if table.empty == True :
