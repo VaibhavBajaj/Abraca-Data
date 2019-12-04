@@ -18,7 +18,7 @@ class DB:
         title_query = "true = true"
         journal_query = "true = true"
         if id is None and name is None and affiliation is None and title is None and journal is None:
-            return None
+            return -1
 
         if id is not None:
             id_query = "id = " + id
@@ -38,11 +38,25 @@ class DB:
         return result
 
     # update_data sample dictionary
-    # { name : 'Vaibhav', affiliation : 'UIUC', citedby : '101', pub_title : 'Article Title',
+    # { id : '105', name : 'Vaibhav', affiliation : 'UIUC', citedby : '101', pub_title : 'Article Title',
     #   pub_year : '2012', pub_url : '', journal : 'Journal Name' }
 
-    # Return 200 on success, other error codes on failure
+    # Return 0 on success, other error codes on failure
     def update_article(self, update_data):
+        if update_data['id'] is None:
+            return -1
+
+        data = self.query_article(update_data['id'], None, None, None, None)
+        data = data.to_dict()
+        for key, value in data.items():
+            if update_data[key] is not None:
+                data[key] = update_data[key]
+            else:
+                data[key] = value[0]
+
+        print(update_data)
+        update_data = data
+        print(update_data)
         update_query = '''
             UPDATE articles
             SET name = %(name)s,
@@ -50,7 +64,7 @@ class DB:
                 citedby = %(citedby)s,
                 pub_title = %(pub_title)s,
                 pub_year = %(pub_year)s,
-                pub_url = %(pub_url)s
+                pub_url = %(pub_url)s,
                 journal = %(journal)s
             WHERE id = %(id)s;
         '''
@@ -68,7 +82,7 @@ class DB:
     # { name : 'Vaibhav', affiliation : 'UIUC', citedby : '101', pub_title : 'Article Title',
     #   pub_year : '2012', pub_url : '', journal : 'Journal Name' }
 
-    # Return 200 on success, other error codes on failure
+    # Return 0 on success, other error codes on failure
     def insert_article(self, insert_data):
         insert_query = '''
             INSERT INTO articles (name, affiliation, citedby, pub_title, pub_year, pub_url, journal)
@@ -123,7 +137,7 @@ class DB:
     # delete_data sample dictionary
     # { id : '101' }
 
-    # Return 200 on success, other error codes on failure
+    # Return 0 on success, other error codes on failure
     def delete_article(self, delete_data):
         delete_query = '''
             DElETE FROM articles WHERE id = %(id)s

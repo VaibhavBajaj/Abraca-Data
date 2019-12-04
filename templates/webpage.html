@@ -58,11 +58,35 @@
     </form>
     <form>
       <fieldset>
-        <legend><b>Search For Article</b></legend>
+        <legend><b>Query Article</b></legend>
         <p>
-          <label>What is the <b>Article ID</b>?</label>
+          <label>Article Id</label>
           <input type = "text"
-                 id = "myText4"
+                 id = "query_id"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Author Name</label>
+          <input type = "text"
+                 id = "query_name"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Affiliation</label>
+          <input type = "text"
+                 id = "query_affiliation"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Article Publish Title</label>
+          <input type = "text"
+                 id = "query_pub_title"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Journal Name</label>
+          <input type = "text"
+                 id = "query_journal"
                  value = "text here" />
         </p>
         <button id="query_button" type="button" onclick="queryFunction()">Search</button>
@@ -72,21 +96,51 @@
       <fieldset>
         <legend><b>Update Article</b></legend>
         <p>
-          <label>What is the <b>Article ID</b>?</label>
+          <label>Article Id</label>
           <input type = "text"
-                 id = "myText5"
+                 id = "update_id"
                  value = "text here" />
         </p>
         <p>
-          <label>What is the <b>field</b> you'd like to update?</label>
+          <label>Author Name</label>
           <input type = "text"
-                 id = "myText6"
+                 id = "update_name"
                  value = "text here" />
         </p>
         <p>
-          <label>What is the <b>new value</b>?</label>
+          <label>Affiliation</label>
           <input type = "text"
-                 id = "myText7"
+                 id = "update_affiliation"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Citation Count</label>
+          <input type = "text"
+                 id = "update_citedby"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Article Publish Title</label>
+          <input type = "text"
+                 id = "update_pub_title"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Article Publish Year</label>
+          <input type = "text"
+                 id = "update_pub_year"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Article Publish URL</label>
+          <input type = "text"
+                 id = "update_pub_url"
+                 value = "text here" />
+        </p>
+        <p>
+          <label>Journal Name</label>
+          <input type = "text"
+                 id = "update_journal"
                  value = "text here" />
         </p>
         <button id="update_button" type="button" onclick="updateFunction()">Update</button>
@@ -124,12 +178,50 @@
           data["pub_year"] = getData("insert_pub_year");
           data["pub_url"] = getData("insert_pub_url");
           data["journal"] = getData("insert_journal");
-          $.post( "/insert", { "data" : data }).done(function(status) {
+          $.post( "/insert", { "data" : JSON.stringify(data) }).done(function(status) {
               var code = status["code"];
               if(code === 0) {
                   alert("Article successfully inserted");
               } else {
-                alert("Error code: " + stat);
+                  alert("Error code: " + code.toString());
+              }
+          });
+      }
+
+      function queryFunction() {
+          var data = {};
+          data["id"] = getData("query_id");
+          data["name"] = getData("query_name");
+          data["affiliation"] = getData("query_affiliation");
+          data["pub_title"] = getData("query_pub_title");
+          data["journal"] = getData("query_journal");
+          $.post( "/query", { "data" : JSON.stringify(data) }).done(function(result) {
+              var code = result["code"];
+              if(code === 0) {
+                  alert("Article successfully queried");
+                  document.getElementById("result_table").innerHTML = result["data"]
+              } else {
+                  alert("No matching rows found in table");
+              }
+          });
+      }
+
+      function updateFunction() {
+          var data = {};
+          data["id"] = getData("update_id");
+          data["name"] = getData("update_name");
+          data["affiliation"] = getData("update_affiliation");
+          data["citedby"] = getData("update_citedby");
+          data["pub_title"] = getData("update_pub_title");
+          data["pub_year"] = getData("update_pub_year");
+          data["pub_url"] = getData("update_pub_url");
+          data["journal"] = getData("update_journal");
+          $.post( "/update", { "data" : JSON.stringify(data) }).done(function(status) {
+              var code = status["code"];
+              if(code === 0) {
+                  alert("Article successfully updated");
+              } else {
+                  alert("Error code: " + code.toString());
               }
           });
       }
@@ -137,12 +229,12 @@
       function deleteFunction() {
           var data = {};
           data["id"] = getData("delete_id");
-          $.post( "/delete", { "data" : data }).done(function(status) {
+          $.post( "/delete", { "data" : JSON.stringify(data) }).done(function(status) {
               var code = status["code"];
               if(code === 0) {
                   alert("Article successfully deleted");
               } else {
-                  alert("Error code: " + stat);
+                  alert("Error code: " + code.toString());
               }
           });
       }
